@@ -22,5 +22,4 @@ Desktop.ini
 #virtualenv
 venv/
 
-#trial
-_trial_temp/
+/.vagrant/
