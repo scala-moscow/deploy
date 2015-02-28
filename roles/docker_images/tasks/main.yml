@@ -1,0 +1,36 @@
+---
+- name: python-pip deb pkg
+  apt:
+    name: python-pip
+- name: docker.py package
+  pip:
+    name: docker-py
+    version: "{{docker_py_version}}"
+
+- name: docker files dir
+  file:
+    state: directory
+    path: "{{files_dir}}/dockerfiles"
+    mode: 0775
+    owner: "{{setup_user}}"
+    group: "{{docker_group}}"
+- name: docker common image dir
+  file:
+    state: directory
+    path: "{{files_dir}}/dockerfiles/common"
+    mode: 0775
+    owner: "{{setup_user}}"
+    group: "{{docker_group}}"
+
+- name: common dockerfile
+  template: 
+    dest: "{{files_dir}}/dockerfiles/common/Dockerfile"
+    owner: "{{setup_user}}"
+    group: "{{docker_group}}"
+    src: dockerfiles/common.j2
+
+- name: build common container
+  docker_image: 
+    name: "{{docker_container_ns}}/common"
+    tag: "{{docker_container_common_version}}"
+    path: "{{files_dir}}/dockerfiles/common"

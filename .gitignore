@@ -23,3 +23,4 @@ Desktop.ini
 venv/
 
 /.vagrant/
+/docker/**/provisioning_rsa.pub

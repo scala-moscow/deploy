@@ -1,5 +1,6 @@
 # Deploy for all *.scala.moscow servers & containers
 
+
 ## Схема
 
 Provisioning с помощью ansible, сервисы запускаются в контейнерах docker.
@@ -8,12 +9,18 @@ Provisioning с помощью ansible, сервисы запускаются в
 docker контейнеры. При необходимости количество VDS можно будет увеличить и 
 разнести по ним docker контейнеры.
 
+С помощью ansible playbook `setup_basehost0.yml` настраивается `basehost0` 
+и docker контейнеры. Docker контейнеры создаются в нём на основе 
+[phusion baseimage](https://github.com/phusion/baseimage-docker).
+Основная конфигурация внутри контейнера делается тоже силами docker, 
+а не Dockerfiles.
 
 ### Docker контейнеры
 
-* nginx front
-* www - [scala.moscow](https://github.com/scala-moscow/scala.moscow)
-* hub - [hub.scala.moscow](https://github.com/scala-moscow/hub.scala.moscow)
+* `front` - входной nginx и 
+  статические сайты 
+  ([scala.moscow](https://github.com/scala-moscow/scala.moscow)).
+* `hub` - [hub.scala.moscow](https://github.com/scala-moscow/hub.scala.moscow)
 
 
 ## Локальный запуск
@@ -24,11 +31,29 @@ docker контейнеры. При необходимости количест�
 * будет установлен vagrant машина с ip адресом `192.168.78.10`
 * прописать в `/etc/hosts` домены для scala.moscow
 ```
-192.168.78.10 scala.moscow hub.scala.moscow feed.scala.moscow
+192.168.78.10 scala.moscow.local hub.scala.moscow.local feed.scala.moscow.local
 ```
-* запустить ansible для настройки host'ов *TODO*
+
+* запустить ansible для настройки `basehost0`
+```
+ansible-playbook -i vargant.hosts setup_basehost0.yml
+```
+
 * запустить ansible для настройки контейнеров *TODO*
 
+### Shell доступ
+
+* basehost0
+```
+vagrant ssh
+```
+
+* контейнеры
+```
+vagrant ssh
+docker exec -ti NAME bash
+```
 
 ## Production запуск
+
 * *TODO*

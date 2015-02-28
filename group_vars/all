@@ -1,0 +1,4 @@
+files_dir: /usr/local/share/scala-moscow
+var_dir: /var/scala-moscow/
+
+setup_user: sm

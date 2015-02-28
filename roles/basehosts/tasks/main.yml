@@ -1,0 +1,5 @@
+---
+- name: "add setup user"
+  user:
+    name: "{{setup_user}}"
+    groups: "{{docker_group}}"

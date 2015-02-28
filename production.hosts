@@ -1,0 +1,5 @@
+[basehost]
+sm
+
+[basehosts:children]
+basehost
