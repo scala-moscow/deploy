@@ -1,0 +1,12 @@
+---
+- name: remove unnecessary packages
+  apt:
+    purge: yes
+    state: absent
+    name: "{{item}}"
+  with_items:
+    - landscape-common
+    - landscape-client
+
+- name: russian locale
+  locale_gen: name=ru_RU.UTF-8 state=present

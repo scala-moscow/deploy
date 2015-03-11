@@ -1,1 +1,5 @@
 docker_group: docker
+docker_baseimage_version: 0.9.16
+docker_py_version: 1.0.0
+
+docker_base_container_version: 0.1pre4

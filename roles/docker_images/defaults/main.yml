@@ -1,7 +1,6 @@
 docker_baseimage_version: 0.9.16
 docker_py_version: 1.0.0
 
-docker_container_common_version: 0.1pre2
-docker_container_nginx_version: 0.1pre2
+docker_base_container_version: 0.1
 
 docker_container_ns: scalamoscow

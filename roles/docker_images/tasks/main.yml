@@ -14,23 +14,23 @@
     mode: 0775
     owner: "{{setup_user}}"
     group: "{{docker_group}}"
-- name: docker common image dir
+
+- name: docker base container image dir
   file:
     state: directory
-    path: "{{files_dir}}/dockerfiles/common"
+    path: "{{files_dir}}/dockerfiles/base"
     mode: 0775
     owner: "{{setup_user}}"
     group: "{{docker_group}}"
-
-- name: common dockerfile
+- name: base container dockerfile
   template: 
-    dest: "{{files_dir}}/dockerfiles/common/Dockerfile"
+    dest: "{{files_dir}}/dockerfiles/base/Dockerfile"
     owner: "{{setup_user}}"
     group: "{{docker_group}}"
-    src: dockerfiles/common.j2
+    src: dockerfiles/base.j2
 
-- name: build common container
+- name: build base container
   docker_image: 
-    name: "{{docker_container_ns}}/common"
-    tag: "{{docker_container_common_version}}"
-    path: "{{files_dir}}/dockerfiles/common"
+    name: "{{docker_container_ns}}/base"
+    tag: "{{docker_base_container_version}}"
+    path: "{{files_dir}}/dockerfiles/base"
