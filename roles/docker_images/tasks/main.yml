@@ -2,10 +2,12 @@
 - name: python-pip deb pkg
   apt:
     name: python-pip
+  tags: checked
 - name: docker.py package
   pip:
     name: docker-py
     version: "{{docker_py_version}}"
+  tags: checked
 
 - name: docker files dir
   file:
@@ -15,22 +17,8 @@
     owner: "{{setup_user}}"
     group: "{{docker_group}}"
 
-- name: docker base container image dir
-  file:
-    state: directory
-    path: "{{files_dir}}/dockerfiles/base"
-    mode: 0775
-    owner: "{{setup_user}}"
-    group: "{{docker_group}}"
-- name: base container dockerfile
-  template: 
-    dest: "{{files_dir}}/dockerfiles/base/Dockerfile"
-    owner: "{{setup_user}}"
-    group: "{{docker_group}}"
-    src: dockerfiles/base.j2
-
-- name: build base container
-  docker_image: 
-    name: "{{docker_container_ns}}/base"
-    tag: "{{docker_base_container_version}}"
-    path: "{{files_dir}}/dockerfiles/base"
+- include: setup_image.yml
+  vars:
+      image:
+        name: base
+        version: "{{docker_base_image_version}}"

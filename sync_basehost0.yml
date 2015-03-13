@@ -1,0 +1,5 @@
+---
+- hosts: basehost0
+  gather_facts: no
+  tasks:
+    - include: ../tasks/sync_provisioning.yml

@@ -1,0 +1,15 @@
+# todo: use syncronize module (for now there is some gotchas with vargant hosts)
+
+- name: add provisioning dir
+  file:
+    state: directory
+    path: "{{files_dir}}/provisioning/"
+    owner: "{{setup_user}}"
+
+# todo: rm old temp .hosts files (age > 1 day)
+- name: sync provisioning configs to basehost
+  copy:
+    src: "{{item}}"
+    dest: "{{files_dir}}/provisioning/"
+    owner: "{{setup_user}}"
+  with_items: sync_files

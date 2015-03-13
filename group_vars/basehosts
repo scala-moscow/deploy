@@ -1,5 +1,12 @@
-docker_group: docker
-docker_baseimage_version: 0.9.16
-docker_py_version: 1.0.0
+###
+# common options for basehosts
+###
 
-docker_base_container_version: 0.1pre4
+# dependencies versions
+docker_group: docker
+docker_images_ansible_version: 0.9.16
+docker_py_version: 1.0.0
+docker_images_ansible_version: "==1.8.4"
+
+# our versions
+docker_base_image_version: 0.1pre10

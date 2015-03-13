@@ -1,4 +1,14 @@
+###
+# those options are available for any host
+###
+
 files_dir: /usr/local/share/scala-moscow
 var_dir: /var/scala-moscow/
 
 setup_user: sm
+
+sync_files:
+  - ./roles
+  - ./tasks
+  - ./group_vars
+  - setup_base_image.yml
