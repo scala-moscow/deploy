@@ -2,4 +2,4 @@
   command: apt-get clean
 
 - name: remove temp files
-  command: rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  shell: rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

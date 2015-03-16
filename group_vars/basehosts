@@ -9,4 +9,4 @@ docker_py_version: 1.0.0
 docker_images_ansible_version: "==1.8.4"
 
 # our versions
-docker_base_image_version: 0.1pre10
+docker_base_image_version: 0.1pre14
