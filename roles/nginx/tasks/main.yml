@@ -1,0 +1,36 @@
+- name: nginx package
+  apt:
+    name: nginx{{ nginx_version }}
+    update_cache: yes
+
+- include: nginx_dir.yml path={{ nginx_configs_dir }}
+- include: nginx_dir.yml path={{ nginx_configs_dir }}/conf.d
+- include: nginx_dir.yml path={{ nginx_configs_dir }}/sites-enabled
+- include: nginx_dir.yml path={{ nginx_configs_dir }}/sites-available
+
+- include: nginx_config.yml rel_path=nginx.conf
+- include: nginx_config.yml rel_path=meta.conf
+- include: nginx_config.yml rel_path=proxy_params.conf
+- include: nginx_config.yml rel_path=fastcgi_params.conf
+- include: nginx_config.yml rel_path=sites-available/default
+
+- name: static files dir
+  file:
+    dest: "{{ files_dir }}/www"
+    mode: 0755
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: root
+
+- include: static_file.yml rel_path=index.html
+- include: static_file.yml rel_path=50x.html
+- include: static_file.yml rel_path=404.html
+- include: static_file.yml rel_path=403.html
+
+- name: default host symlink
+  file:
+    path: "{{ nginx_configs_dir }}/sites-enabled/default"
+    state: link
+    src: ../sites-available/default
+
+# todo upstart config

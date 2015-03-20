@@ -3,7 +3,7 @@
   apt:
     purge: yes
     state: absent
-    name: "{{item}}"
+    name: "{{ item }}"
   with_items:
     - landscape-common
     - landscape-client

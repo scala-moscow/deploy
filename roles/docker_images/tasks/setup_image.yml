@@ -1,100 +1,122 @@
+- name: build image
+  debug:
+    msg: "name={{ image.name }} version={{ image.version }}"
+  changed_when: no
 
-- name: "{{image.name}} container image dir"
+- name: reset vars
+  set_fact:
+    image_id: ''
+    image_id_exec: ''
+
+- name: "detect if image {{ image.name }} exists"
+  shell: >
+    docker images | awk '{print $1 "|" $2 " " $3}' |
+    grep '{{ docker_container_ns }}/{{ image.name }}|{{ image.version }} ' |
+    awk '{print $2}'
+  register: image_id_exec
+  changed_when: image_id_exec.stdout == ''
+
+- name: gather image_id
+  set_fact:
+    image_id: "{{ image_id_exec.stdout }}"
+  when: image_id_exec.stdout|default('') != ''
+
+- name: "{{ image.name }} image_id"
+  debug:
+    msg: "image_id = {{ image_id|default('[not exists]') }}"
+  changed_when: no
+
+- name: "{{ image.name }} container image dir"
   file:
     state: directory
-    path: "{{files_dir}}/dockerfiles/{{image.name}}"
+    path: "{{ files_dir }}/dockerfiles/{{ image.name }}"
     mode: 0775
-    owner: "{{setup_user}}"
-    group: "{{docker_group}}"
+    owner: "{{ setup_user }}"
+    group: "{{ docker_group }}"
+  when: image_id == ''
 
-- name: "{{image.name}} image dockerfile"
+- name: "{{ image.name }} image dockerfile"
   template:
-    dest: "{{files_dir}}/dockerfiles/{{image.name}}/Dockerfile"
-    owner: "{{setup_user}}"
-    group: "{{docker_group}}"
-    src: dockerfiles/{{image.name}}.j2
+    dest: "{{ files_dir }}/dockerfiles/{{ image.name }}/Dockerfile"
+    owner: "{{ setup_user }}"
+    group: "{{ docker_group }}"
+    src: dockerfiles/{{ image.name }}.j2
+  when: image_id == ''
 
 - include: ../../../tasks/sync_provisioning.yml
+  when: image_id == ''
 
 - name: generate inventory file
   template:
-    dest: "{{files_dir}}/provisioning/build_{{image.name}}_container_{{image.version}}.hosts"
+    dest: "{{ files_dir }}/provisioning/build_{{ image.name }}_container_{{ image.version }}.hosts"
     src: container_inventory.j2
-    owner: "{{setup_user}}"
+    owner: "{{ setup_user }}"
+  when: image_id == ''
 
-- name: "detect if {{image.name}} image exists"
-  shell: "docker images | grep -P '^{{docker_container_ns}}\\/{{image.name}}\ +{{image.version}}\ +' | awk '{print $3}'"
-  register: image_id_exec
-- name: set image_id
-  set_fact:
-    image_id: "{{image_id_exeimage.stdout}}"
-  when: image_id_exec.stdout|default('') != ''
-
-- name: create image
-  debug: msg=
-  when: image_id is not defined
-- name: skip creating image
-  debug:
-    msg: "image_id = {{image_id}}"
-  when: image_id is defined
-
-- name: build {{image.name}} pre provisioning image (may take few minutes)
+- name: build {{ image.name }} pre provisioning image (may take few minutes)
   docker_image:
-    name: "{{docker_container_ns}}/{{image.name}}_pre"
-    tag: "{{image.version}}"
-    path: "{{files_dir}}/dockerfiles/{{image.name}}"
-  when: image_id is not defined
+    name: "{{ docker_container_ns }}/{{ image.name }}_pre"
+    tag: "{{ image.version }}"
+    path: "{{ files_dir }}/dockerfiles/{{ image.name }}"
+  when: image_id == ''
 
-- name: delete {{image.name}} build container
+- name: delete {{ image.name }} build container
   docker:
-    name: build_{{image.name}}_container_{{image.version}}
+    name: build_{{ image.name }}_container_{{ image.version }}
     state: absent
-    image: "{{docker_container_ns}}/{{image.name}}_pre:{{image.version}}"
-  when: image_id is not defined
+    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+  when: image_id == ''
 
-- name: start temp {{image.name}} build container
+- name: start temp {{ image.name }} build container
   docker:
-    name: build_{{image.name}}_container_{{image.version}}
+    name: build_{{ image.name }}_container_{{ image.version }}
     state: running
-    image: "{{docker_container_ns}}/{{image.name}}_pre:{{image.version}}"
-    volumes: "{{files_dir}}/provisioning:/provisioning:ro"
+    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+    volumes: "{{ files_dir }}/provisioning:/provisioning:ro"
 
-  when: image_id is not defined
+  when: image_id == ''
 
-- name: provision temp {{image.name}} build container (may take few minutes)
-  command: docker exec -ti build_{{image.name}}_container_{{image.version}} ansible-playbook -i /provisioning/build_{{image.name}}_container_{{image.version}}.hosts /provisioning/setup_{{image.name}}_image.yml
-  when: image_id is not defined
+- name: provision temp {{ image.name }} build container (may take few minutes)
+  command: >
+    docker exec -ti build_{{ image.name }}_container_{{ image.version }}
+    ansible-playbook -i /provisioning/build_{{ image.name }}_container_{{ image.version }}.hosts
+    /provisioning/setup_{{ image.name }}_image.yml
+  when: image_id == ''
   tags:
     - temp
     - container_provisioning
 
-- name: stop temp {{image.name}} build container
+- name: stop temp {{ image.name }} build container
   docker:
-    name: build_{{image.name}}_container_{{image.version}}
+    name: build_{{ image.name }}_container_{{ image.version }}
     state: stopped
-    image: "{{docker_container_ns}}/{{image.name}}_pre:{{image.version}}"
-  when: image_id is not defined
+    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+  when: image_id == ''
   tags:
     - temp
 
-- name: commit {{image.name}} image
-  command: "docker commit build_{{image.name}}_container_{{image.version}} {{docker_container_ns}}/{{image.name}}:{{image.version}}"
-  when: image_id is not defined
+- name: commit {{ image.name }} image
+  command: >
+    docker commit build_{{ image.name }}_container_{{ image.version }}
+    {{ docker_container_ns }}/{{ image.name }}:{{ image.version }}
+  when: image_id == ''
   tags:
     - temp
     - container_provisioning
 
-- name: delete {{image.name}} build container
+- name: delete {{ image.name }} build container
   docker:
-    name: build_{{image.name}}_container_{{image.version}}
+    name: build_{{ image.name }}_container_{{ image.version }}
     state: absent
-    image: "{{docker_container_ns}}/{{image.name}}_pre:{{image.version}}"
-  when: image_id is not defined
+    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+  when: image_id == ''
   tags:
     - temp
+  ignore_errors: yes
 
-- name: delete temp {{image.name}} image
-  command: "docker rmi -f {{docker_container_ns}}/{{image.name}}_pre:{{image.version}}"
-  when: image_id is not defined
+- name: delete temp {{ image.name }} image
+  command: docker rmi -f {{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}
+  when: image_id == ''
   tags:
     - temp
+  ignore_errors: yes

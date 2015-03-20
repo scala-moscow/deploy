@@ -1,0 +1,31 @@
+- name: nginx service dir
+  file:
+    path: /etc/service/nginx
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: nginx run file
+  template:
+    dest: /etc/service/nginx/run
+    src: etc/service/nginx/run.j2
+    owner: root
+    group: root
+    mode: 0755
+
+- name: nginx-log-forwarder
+  file:
+    path: /etc/service/nginx-log-forwarder
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: nginx-log-forwarder run file
+  template:
+    dest: /etc/service/nginx-log-forwarder/run
+    src: etc/service/nginx-log-forwarder/run.j2
+    owner: root
+    group: root
+    mode: 0755

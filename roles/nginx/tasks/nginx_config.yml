@@ -1,0 +1,9 @@
+- name: "nginx config {{ rel_path }}"
+  template:
+    backup: yes
+    dest: "{{ nginx_configs_dir }}/{{ rel_path }}"
+    src: etc/nginx/{{ rel_path }}.j2
+    follow: yes
+    owner: "{{ nginx_configs_owner }}"
+    group: "{{ nginx_configs_group }}"
+    mode: 0644

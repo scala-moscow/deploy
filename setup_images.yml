@@ -2,6 +2,4 @@
 - hosts: basehost0
   gather_facts: no
   roles:
-  - ubuntu_host
-  - basehosts
-  - docker_host
+  - docker_images

@@ -10,9 +10,9 @@
 docker контейнеры. При необходимости количество VDS можно будет увеличить и 
 разнести по ним docker контейнеры.
 
-С помощью ansible playbook `setup_basehost0.yml` настраивается `basehost0` 
-и docker images внутри него, но не создаются контейнеры. Docker images создаются
-на основе [phusion baseimage](https://github.com/phusion/baseimage-docker).
+С помощью ansible настраивается `basehost0` и  docker images внутри него,
+но не создаются контейнеры. Docker images создаются на основе
+[phusion baseimage](https://github.com/phusion/baseimage-docker).
 
 Image создаются только если image с таким названием и версией ещё нет в локальном хранилище.
 Поэтому для пересборки image нужно поднять в [group_vars/basehosts](group_vars/basehosts)
@@ -47,17 +47,29 @@ playbook с названием `setup_%IMAGE%_image.yml`. После конфи�
 ```
 192.168.78.10 scala.moscow.local hub.scala.moscow.local feed.scala.moscow.local
 ```
-
-* запустить ansible для настройки `basehost0`
+* ansible запускать с опцией
 ```
-ansible-playbook -i vargant.hosts setup_basehost0.yml
+anbible-playbook -i vagrant.hosts PLAYBOOK
 ```
 
-* запустить ansible для создания и настройки контейнера `front` *TODO*
+## Provisioning
 
-* запустить ansible для создания и настройки контейнера `hub` *TODO*
+* `setup_basehost0.yml` – настройка `basehost0`
 
-### Shell доступ
+* `setup_images.yml` – настройка базовых images для docker
+
+* *TODO* - создание и настройка контейнера `front`
+
+* *TODO* - создание и настройка контейнера `hub`
+
+* `setup_basehosts_and_images.yml` – настройка всех basehost и images в них
+
+* `site.yml` – настройка всего
+
+Остальные playbook запускаются внутри контейнеров из basehost, запуск их
+локально не имеет смысла.
+
+## Shell доступ
 
 * basehost0
 ```
@@ -70,6 +82,3 @@ vagrant ssh
 docker exec -ti NAME bash
 ```
 
-## Production запуск
-
-* *TODO*

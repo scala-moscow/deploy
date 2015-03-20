@@ -1,0 +1,30 @@
+server {
+	listen {{ nginx_http_port }} default_server;
+    server_name localhost;
+
+	root {{ files_dir }}/www;
+	index index.html index.htm;
+
+	location / {
+		try_files $uri $uri/ /index.html =404;
+	}
+
+	error_page 404 /404.html;
+	error_page 403 /403.html;
+	error_page 500 502 503 504 /50x.html;
+
+	location = /50x.html {
+		root {{ files_dir }}/www;
+	}
+    location = /404.html {
+		root {{ files_dir }}/www;
+	}
+    location = /403.html {
+		root {{ files_dir }}/www;
+	}
+
+    # deny access to any dot files
+	location ~ /\. {
+		deny all;
+	}
+}

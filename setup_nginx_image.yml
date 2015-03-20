@@ -1,0 +1,8 @@
+---
+- hosts: container_nginx
+  gather_facts: no
+  roles:
+  - ubuntu_host
+  - nginx
+  - nginx_container
+  - containers

@@ -14,7 +14,7 @@
 - name: docker package
   apt: 
     install_recommends: yes
-    name: lxc-docker={{docker_version}}
+    name: lxc-docker={{ docker_version }}
   tags: checked
 
 - name: docker related utils
@@ -24,7 +24,7 @@
 
 - name: pipework script
   get_url: 
-    url: https://github.com/jpetazzo/pipework/raw/{{pipework_version}}/pipework
+    url: https://github.com/jpetazzo/pipework/raw/{{ pipework_version }}/pipework
     dest: /usr/local/bin/pipework
     force: true
   tags: checked

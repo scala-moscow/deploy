@@ -1,0 +1,5 @@
+FROM {{ docker_container_ns }}/base:{{ docker_base_image_version }}
+
+MAINTAINER ScalaMoscow <public@scala.moscow>
+
+CMD ["/sbin/my_init"]

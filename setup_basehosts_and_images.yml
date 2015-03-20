@@ -1,0 +1,3 @@
+---
+- include: setup_basehost0.yml
+- include: setup_images.yml

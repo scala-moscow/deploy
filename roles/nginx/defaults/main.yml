@@ -1,0 +1,18 @@
+
+nginx_version: "-core=1.4.6-1ubuntu3.2" # appends to "nginx",
+                                        # diff of nginx pkgs - http://askubuntu.com/a/556382
+nginx_configs_dir: /etc/nginx
+nginx_configs_owner: root
+nginx_configs_group: root
+
+nginx_access_log: /var/log/nginx/access.log
+nginx_error_log: /var/log/nginx/error.log
+nginx_pid_path: /run/nginx.pid
+nginx_worker_processes: 4
+nginx_user: www-data
+nginx_daemon: yes
+nginx_http_port: 80
+
+nginx_additional_settings: ''
+nginx_additional_server_settings: ''
+nginx_additional_events_settings: ''

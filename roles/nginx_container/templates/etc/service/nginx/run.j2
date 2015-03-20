@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# based on https://github.com/phusion/passenger-docker/blob/master/image/runit/nginx
+#
+set -e
+echo "> start nginx"
+if [[ ! -e {{ nginx_error_log }} ]]; then
+	# The Nginx log forwarder might be sleeping and waiting
+	# until the error log becomes available. We restart it in
+	# 1 second so that it picks up the new log file quickly.
+	(sleep 1 && sv restart /etc/service/nginx-log-forwarder)
+fi
+exec /usr/sbin/nginx

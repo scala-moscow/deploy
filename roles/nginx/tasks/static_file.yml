@@ -1,0 +1,8 @@
+- name: "static file {{ rel_path }}"
+  template:
+    dest: "{{ files_dir }}/www/{{ rel_path }}"
+    src: usr/local/share/scala-moscow/www/{{ rel_path }}.j2
+    follow: yes
+    owner: "{{ nginx_user }}"
+    group: "root"
+    mode: 0644

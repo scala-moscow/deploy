@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# based on https://github.com/phusion/passenger-docker/blob/master/image/runit/nginx-log-forwarder
+#
+# Forwards the Nginx error.log to the Docker logs.
+set -e
+if [[ -e {{ nginx_error_log }} ]]; then
+    echo "> watch nginx log"
+	exec tail -F '{{ nginx_error_log }}'
+else
+	exec sleep 10
+fi

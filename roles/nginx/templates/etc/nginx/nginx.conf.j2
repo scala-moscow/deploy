@@ -1,0 +1,48 @@
+user {{ nginx_user }};
+worker_processes {{ nginx_worker_processes }};
+pid {{ nginx_pid_path }};
+daemon {{ 'on' if nginx_daemon else 'off' }};
+
+{{ nginx_additional_settings }}
+
+events {
+	worker_connections 768;
+    {{ nginx_additional_events_settings }}
+}
+
+http {
+	##
+	# Basic Settings
+	##
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+
+	include {{ nginx_configs_dir }}/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# Logging Settings
+	##
+	access_log {{ nginx_access_log }};
+	error_log {{ nginx_error_log }};
+
+	##
+	# Gzip Settings
+	##
+	gzip on;
+	gzip_disable "msie6";
+	gzip_types text/plain text/css application/json
+               application/x-javascript text/xml application/xml
+               application/xml+rss text/javascript;
+
+    {{ nginx_additional_server_settings }}
+
+	##
+	# Virtual Host Configs
+	##
+	include {{ nginx_configs_dir }}/conf.d/*.conf;
+	include {{ nginx_configs_dir }}/sites-enabled/*;
+}

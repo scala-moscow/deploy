@@ -6,19 +6,25 @@
 - name: docker.py package
   pip:
     name: docker-py
-    version: "{{docker_py_version}}"
+    version: "{{ docker_py_version }}"
   tags: checked
 
 - name: docker files dir
   file:
     state: directory
-    path: "{{files_dir}}/dockerfiles"
+    path: "{{ files_dir }}/dockerfiles"
     mode: 0775
-    owner: "{{setup_user}}"
-    group: "{{docker_group}}"
+    owner: "{{ setup_user }}"
+    group: "{{ docker_group }}"
 
 - include: setup_image.yml
   vars:
       image:
         name: base
-        version: "{{docker_base_image_version}}"
+        version: "{{ docker_base_image_version }}"
+
+- include: setup_image.yml
+  vars:
+      image:
+        name: nginx
+        version: "{{ docker_nginx_image_version }}"

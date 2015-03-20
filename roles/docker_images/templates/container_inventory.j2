@@ -1,5 +1,5 @@
-[container_{{image.name}}]
+[container_{{ image.name }}]
 localhost ansible_connection=local
 
-[containers:children]
-container_{{image.name}}
+[all_containers:children]
+container_{{ image.name }}

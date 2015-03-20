@@ -12,3 +12,4 @@ sync_files:
   - ./tasks
   - ./group_vars
   - setup_base_image.yml
+  - setup_nginx_image.yml

@@ -1,6 +1,16 @@
 ---
-- name: "add setup user"
+- name: setup user
   user:
-    name: "{{setup_user}}"
-    groups: "{{docker_group}}"
+    name: "{{ setup_user }}"
+    groups: "{{ docker_group }}"
   tags: checked
+
+- name: network utils
+  apt:
+    name: "{{ item }}"
+    install_recommends: no
+    state: present
+  with_items:
+    - nmap
+    - traceroute
+    - iperf

@@ -1,0 +1,8 @@
+- name: "dir for nginx configs {{ path }}"
+  file:
+    path: "{{ path }}"
+    follow: yes
+    owner: "{{ nginx_configs_owner }}"
+    group: "{{ nginx_configs_group }}"
+    mode: 0755
+    state: directory
