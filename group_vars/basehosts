@@ -10,4 +10,4 @@ docker_images_ansible_version: "==1.8.4"
 
 # our versions
 docker_base_image_version: 0.1
-docker_nginx_image_version: 0.1pre1
+docker_nginx_image_version: 0.1
