@@ -1,0 +1,9 @@
+- name: create front container
+  # use command because of `docker` module not supported container creation
+  # without running
+  command: >
+    docker create
+    --name='{{ container.fqn }}'
+    --publish=80:80
+    --hostname=front.basehost0.scala.moscow
+    "{{ docker_container_ns }}/nginx_image:{{ docker_nginx_image_version }}"

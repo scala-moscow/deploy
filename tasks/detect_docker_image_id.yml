@@ -1,0 +1,21 @@
+- name: reset vars
+  set_fact:
+    image_id: ''
+    image_id_exec: ''
+
+# image mask format:
+# "namespace/name|version"
+- name: "detect if image mask={{ image_mask }} exists"
+  shell: >
+    docker images | awk '{print $1 "|" $2 " " $3}' |
+    grep '{{ image_mask }} ' |
+    awk '{print $2}'
+  register: image_id_exec
+  changed_when: image_id_exec.stdout == ''
+
+- name: gather image_id
+  set_fact:
+    image_id: "{{ image_id_exec.stdout }}"
+  when: image_id_exec.stdout|default('') != ''
+
+# result: image_id = '' or 'abcdef'

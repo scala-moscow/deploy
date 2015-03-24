@@ -20,11 +20,11 @@
 - include: setup_image.yml
   vars:
       image:
-        name: base
+        name: base_image
         version: "{{ docker_base_image_version }}"
 
 - include: setup_image.yml
   vars:
       image:
-        name: nginx
+        name: nginx_image
         version: "{{ docker_nginx_image_version }}"

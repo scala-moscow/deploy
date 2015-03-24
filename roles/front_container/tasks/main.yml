@@ -1,0 +1,11 @@
+- name: front container full version
+  set_fact:
+    front_container_fqn: "front-{{ front_container_version_prefix }}_sm-{{ scala_moscow_version }}"
+
+- include: setup_container.yml
+  vars:
+    container:
+      name: front
+      fqn: "{{ front_container_fqn }}"
+    upstart:
+      service: container_front

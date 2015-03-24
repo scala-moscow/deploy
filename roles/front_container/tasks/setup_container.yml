@@ -1,0 +1,45 @@
+- include: ../../../tasks/detect_docker_container_id.yml
+  vars:
+    name: "{{ container.fqn }}"
+
+- name: upstart config path
+  set_fact:
+    upstart_script: "/etc/init/{{ upstart.service }}.conf"
+  when: container_id == ''
+
+- name: detect if old upstart script exists
+  stat:
+    path: "{{ upstart_script }}"
+  register: upstart_script_stat
+  when: container_id == ''
+
+- name: stop old {{ container.name }} container
+  service:
+    name: "{{ upstart.service }}"
+    state: stopped
+  when: container_id == '' and upstart_script_stat.stat.exists
+
+- include: create_{{ container.name }}_container.yml
+  when: container_id == ''
+
+- name: new upstart config
+  template:
+    src: "{{ item }}"
+    dest: "{{ upstart_script }}"
+    mode: 0644
+    follow: true
+    group: root
+    owner: root
+  when: container_id == ''
+  with_first_found:
+    - etc/init/{{ upstart.service }}.conf.j2
+    - etc/init/container.conf.j2
+
+- include: provision_{{ container.name }}_container.yml
+  when: container_id == ''
+
+- name: start new {{ container.name }} container
+  service:
+    name: "{{ upstart.service }}"
+    state: started
+  when: container_id == ''

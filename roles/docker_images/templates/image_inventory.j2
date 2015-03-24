@@ -1,0 +1,5 @@
+[{{ image.name }}]
+localhost ansible_connection=local
+
+[all_images:children]
+{{ image.name }}

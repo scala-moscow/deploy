@@ -1,0 +1,3 @@
+docker_container_ns: scalamoscow
+
+front_container_version_prefix: 0.1

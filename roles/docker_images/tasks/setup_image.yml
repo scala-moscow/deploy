@@ -3,30 +3,16 @@
     msg: "name={{ image.name }} version={{ image.version }}"
   changed_when: no
 
-- name: reset vars
-  set_fact:
-    image_id: ''
-    image_id_exec: ''
-
-- name: "detect if image {{ image.name }} exists"
-  shell: >
-    docker images | awk '{print $1 "|" $2 " " $3}' |
-    grep '{{ docker_container_ns }}/{{ image.name }}|{{ image.version }} ' |
-    awk '{print $2}'
-  register: image_id_exec
-  changed_when: image_id_exec.stdout == ''
-
-- name: gather image_id
-  set_fact:
-    image_id: "{{ image_id_exec.stdout }}"
-  when: image_id_exec.stdout|default('') != ''
+- include: ../../../tasks/detect_docker_image_id.yml
+  vars:
+    image_mask: "{{ docker_container_ns }}/{{ image.name }}|{{ image.version }}"
 
 - name: "{{ image.name }} image_id"
   debug:
     msg: "image_id = {{ image_id|default('[not exists]') }}"
   changed_when: no
 
-- name: "{{ image.name }} container image dir"
+- name: "{{ image.name }} image docker build dir"
   file:
     state: directory
     path: "{{ files_dir }}/dockerfiles/{{ image.name }}"
@@ -48,8 +34,8 @@
 
 - name: generate inventory file
   template:
-    dest: "{{ files_dir }}/provisioning/build_{{ image.name }}_container_{{ image.version }}.hosts"
-    src: container_inventory.j2
+    dest: "{{ files_dir }}/provisioning/build_{{ image.name }}_{{ image.version }}.hosts"
+    src: image_inventory.j2
     owner: "{{ setup_user }}"
   when: image_id == ''
 
@@ -62,33 +48,41 @@
 
 - name: delete {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_container_{{ image.version }}
+    name: build_{{ image.name }}_{{ image.version }}
     state: absent
     image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
   when: image_id == ''
 
 - name: start temp {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_container_{{ image.version }}
+    name: build_{{ image.name }}_{{ image.version }}
     state: running
     image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
     volumes: "{{ files_dir }}/provisioning:/provisioning:ro"
 
   when: image_id == ''
 
+- name: provisioning command
+  debug:
+    msg: >
+      docker exec -ti build_{{ image.name }}_{{ image.version }}
+      ansible-playbook -i /provisioning/build_{{ image.name }}_{{ image.version }}.hosts
+      /provisioning/setup_{{ image.name }}.yml
+  when: image_id == ''
+
 - name: provision temp {{ image.name }} build container (may take few minutes)
   command: >
-    docker exec -ti build_{{ image.name }}_container_{{ image.version }}
-    ansible-playbook -i /provisioning/build_{{ image.name }}_container_{{ image.version }}.hosts
-    /provisioning/setup_{{ image.name }}_image.yml
+    docker exec -ti build_{{ image.name }}_{{ image.version }}
+    ansible-playbook -i /provisioning/build_{{ image.name }}_{{ image.version }}.hosts
+    /provisioning/setup_{{ image.name }}.yml
   when: image_id == ''
   tags:
     - temp
-    - container_provisioning
+    - image_provisioning
 
 - name: stop temp {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_container_{{ image.version }}
+    name: build_{{ image.name }}_{{ image.version }}
     state: stopped
     image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
   when: image_id == ''
@@ -97,16 +91,16 @@
 
 - name: commit {{ image.name }} image
   command: >
-    docker commit build_{{ image.name }}_container_{{ image.version }}
+    docker commit build_{{ image.name }}_{{ image.version }}
     {{ docker_container_ns }}/{{ image.name }}:{{ image.version }}
   when: image_id == ''
   tags:
     - temp
-    - container_provisioning
+    - image_provisioning
 
 - name: delete {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_container_{{ image.version }}
+    name: build_{{ image.name }}_{{ image.version }}
     state: absent
     image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
   when: image_id == ''

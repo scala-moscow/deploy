@@ -1,3 +1,5 @@
 ---
 - hosts: basehost0
   gather_facts: no
+  roles:
+  - front_container

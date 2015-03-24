@@ -1,0 +1,18 @@
+- name: reset vars
+  set_fact:
+    container_id: ''
+    container_id_exec: ''
+
+- name: "detect if container exists"
+  command: >
+    docker inspect --format=\{\{.Id\}\} '{{ name }}'
+  register: container_id_exec
+  changed_when: container_id_exec.stdout == ''
+  failed_when: no
+
+- name: gather container_id
+  set_fact:
+    container_id: "{{ container_id_exec.stdout }}"
+  when: container_id_exec.stdout|default('') != ''
+
+# result: container_id = '' or 'abcdef...'

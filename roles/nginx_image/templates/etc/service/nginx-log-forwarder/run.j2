@@ -6,7 +6,7 @@
 set -e
 if [[ -e {{ nginx_error_log }} ]]; then
     echo "> watch nginx log"
-	exec tail -F '{{ nginx_error_log }}'
+	exec tail -F '{{ nginx_error_log }}' '{{ nginx_access_log }}'
 else
 	exec sleep 10
 fi
