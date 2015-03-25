@@ -1,0 +1,6 @@
+- name: repos dir
+  file:
+    state: directory
+    dest: "{{ files_dir }}/repos"
+    mode: 0755
+    owner: "{{ setup_user }}"

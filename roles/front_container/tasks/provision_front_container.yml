@@ -1,4 +1,32 @@
-- name: todo
-  debug:
-    msg: todo
+- include: ../../../tasks/update_repo.yml
+  vars:
+    dir: scala.moscow
+    repo: https://github.com/scala-moscow/scala.moscow.git
+  tags:
+    - update_repos
 
+- include: ../../../tasks/sync_provisioning.yml
+
+- name: generate inventory file
+  template:
+    dest: "{{ files_dir }}/provisioning/provision_{{ container.fqn }}.hosts"
+    src: "{{ item }}"
+    owner: "{{ setup_user }}"
+  with_first_found:
+    - "{{ container.name }}_container_inventory.j2"
+    - ../../../templates/container_inventory.j2
+
+- name: provisioning command
+  debug:
+    msg: >
+      docker exec -ti '{{ container.fqn }}'
+      ansible-playbook -i /provisioning/provision_{{ container.fqn }}.hosts
+      /provisioning/setup_{{ container.name }}_container.yml
+
+- name: provision temp {{ image.name }} build container (may take few minutes)
+  command: >
+      docker exec -ti '{{ container.fqn }}'
+      ansible-playbook -i /provisioning/provision_{{ container.fqn }}.hosts
+      /provisioning/setup_{{ container.name }}_container.yml
+  register: res
+  failed_when: "res.rc != 0 or 'skipping: no hosts matched' in res.stdout"

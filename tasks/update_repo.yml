@@ -1,0 +1,9 @@
+- include: create_repos_dir.yml
+
+- name: update {{ dir }} repository
+  git:
+    accept_hostkey: yes
+    bare: yes
+    update: yes
+    dest: "{{ files_dir }}/repos/{{ dir }}"
+    repo: "{{ repo }}"

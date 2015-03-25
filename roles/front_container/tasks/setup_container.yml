@@ -35,11 +35,11 @@
     - etc/init/{{ upstart.service }}.conf.j2
     - etc/init/container.conf.j2
 
-- include: provision_{{ container.name }}_container.yml
-  when: container_id == ''
-
 - name: start new {{ container.name }} container
   service:
     name: "{{ upstart.service }}"
     state: started
+  when: container_id == ''
+
+- include: provision_{{ container.name }}_container.yml
   when: container_id == ''

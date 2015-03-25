@@ -1,3 +1,5 @@
+- include: ../../../tasks/create_repos_dir.yml
+
 - name: create front container
   # use command because of `docker` module not supported container creation
   # without running
@@ -6,4 +8,6 @@
     --name='{{ container.fqn }}'
     --publish=80:80
     --hostname=front.basehost0.scala.moscow
+    --volume={{ files_dir }}/repos:/repos:ro
+    --volume={{ files_dir }}/provisioning:/provisioning:ro
     "{{ docker_container_ns }}/nginx_image:{{ docker_nginx_image_version }}"

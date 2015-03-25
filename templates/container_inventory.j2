@@ -1,0 +1,8 @@
+[{{  container.name }}_container]
+localhost ansible_connection=local
+
+[all_containers:children]
+{{  container.name }}_container
+
+[basehost0_containers:children]
+{{  container.name }}_container

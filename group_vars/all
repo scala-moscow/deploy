@@ -13,3 +13,4 @@ sync_files:
   - ./group_vars
   - setup_base_image.yml
   - setup_nginx_image.yml
+  - setup_front_container.yml
