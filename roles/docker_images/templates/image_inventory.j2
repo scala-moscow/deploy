@@ -1,5 +1,14 @@
 [{{ image.name }}]
 localhost ansible_connection=local
 
+[all_images_and_containers:children]
+{{ image.name }}
+
 [all_images:children]
+{{ image.name }}
+
+[basehost0_images_and_containers:children]
+{{ image.name }}
+
+[basehost0_images:children]
 {{ image.name }}

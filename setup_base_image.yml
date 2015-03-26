@@ -1,6 +1,8 @@
+# this playbook runs from basehost with `docker exec`
+# don't use it derectly
 ---
-- hosts: container_base
+- hosts: base_image
   gather_facts: no
   roles:
   - ubuntu_host
-  - containers
+  - images

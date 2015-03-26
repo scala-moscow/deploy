@@ -1,1 +1,8 @@
+- name: common utils
+  apt:
+    name: "{{item}}"
+    install_recommends: no
+  with_items:
+    - git-core
+
 - include: ../../../tasks/image_cleanup.yml

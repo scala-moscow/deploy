@@ -1,0 +1,45 @@
+- set_fact:
+    scala_moscow_dir: "{{ files_dir }}/scala.moscow"
+
+- name: delete old files
+  file:
+    state: absent
+    path: "{{ scala_moscow_dir }}"
+
+- name: scala.moscow dir
+  file:
+    state: directory
+    path: "{{ scala_moscow_dir }}"
+    recurse: yes
+    follow: yes
+    owner: "{{ nginx_configs_owner }}"
+    group: "{{ nginx_configs_group }}"
+    mode: 0755
+    state: directory
+
+- name: clone scala.moscow repo in temp work copy
+  git:
+    dest: /tmp/scala.moscow
+    repo: /repos/scala.moscow
+    force: yes
+    version: "{{ scala_moscow_version }}"
+
+- name: copy public files
+  command: >
+    mv '/tmp/scala.moscow/{{ item.src }}' '{{ scala_moscow_dir }}/{{ item.dest }}'
+  with_items:
+    - src: public
+      dest: public
+
+- include: nginx_config.yml rel_path=sites-available/scala.moscow
+
+- name: enable scala.moscow site
+  file:
+    path: "{{ nginx_configs_dir }}/sites-enabled/scala.moscow"
+    state: link
+    src: ../sites-available/scala.moscow
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded

@@ -1,11 +1,21 @@
 ###
-# those options are available for any host
+# those options are available for any host, image or container
 ###
 
 files_dir: /usr/local/share/scala-moscow
 var_dir: /var/scala-moscow/
-
 setup_user: sm
+domain_postfix: ''
+
+# docker specific
+docker_container_ns: scalamoscow
+
+# our versions
+docker_base_image_version: 0.1
+docker_nginx_image_version: 0.2
+front_container_version_prefix: 0.2
+scala_moscow_version: 0.1
+
 
 sync_files:
   - ./roles

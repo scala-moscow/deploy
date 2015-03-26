@@ -1,3 +1,5 @@
+# this playbook runs from basehost with `docker exec`
+# don't use it derectly
 ---
 - hosts: nginx_image
   gather_facts: no
@@ -5,4 +7,4 @@
   - ubuntu_host
   - nginx
   - nginx_image
-  - containers
+  - images

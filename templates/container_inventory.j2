@@ -4,5 +4,11 @@ localhost ansible_connection=local
 [all_containers:children]
 {{  container.name }}_container
 
+[all_images_and_containers:children]
+{{  container.name }}_container
+
+[basehost0_images_and_containers:children]
+{{  container.name }}_container
+
 [basehost0_containers:children]
 {{  container.name }}_container

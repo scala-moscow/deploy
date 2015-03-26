@@ -16,17 +16,8 @@
     - "{{ container.name }}_container_inventory.j2"
     - ../../../templates/container_inventory.j2
 
-- name: provisioning command
-  debug:
-    msg: >
-      docker exec -ti '{{ container.fqn }}'
-      ansible-playbook -i /provisioning/provision_{{ container.fqn }}.hosts
-      /provisioning/setup_{{ container.name }}_container.yml
-
-- name: provision temp {{ image.name }} build container (may take few minutes)
-  command: >
-      docker exec -ti '{{ container.fqn }}'
-      ansible-playbook -i /provisioning/provision_{{ container.fqn }}.hosts
-      /provisioning/setup_{{ container.name }}_container.yml
-  register: res
-  failed_when: "res.rc != 0 or 'skipping: no hosts matched' in res.stdout"
+- include: ../../../tasks/run_playbook_in_container.yml
+  vars:
+    container_name: "{{ container.fqn }}"
+    inventory: provision_{{ container.fqn }}
+    playbook: setup_{{ container.name }}_container

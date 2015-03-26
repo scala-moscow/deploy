@@ -67,14 +67,14 @@
     msg: >
       docker exec -ti build_{{ image.name }}_{{ image.version }}
       ansible-playbook -i /provisioning/build_{{ image.name }}_{{ image.version }}.hosts
-      /provisioning/setup_{{ image.name }}.yml
+      /provisioning/setup_{{ image.name }}.yml -e 'domain_postfix={{ domain_postfix }}'
   when: image_id == ''
 
-- name: provision temp {{ image.name }} build container (may take few minutes)
-  command: >
-    docker exec -ti build_{{ image.name }}_{{ image.version }}
-    ansible-playbook -i /provisioning/build_{{ image.name }}_{{ image.version }}.hosts
-    /provisioning/setup_{{ image.name }}.yml
+- include: ../../../tasks/run_playbook_in_container.yml
+  vars:
+    container_name: build_{{ image.name }}_{{ image.version }}
+    inventory: build_{{ image.name }}_{{ image.version }}
+    playbook: setup_{{ image.name }}
   when: image_id == ''
   tags:
     - temp

@@ -1,5 +1,8 @@
+# this playbook runs from basehost with `docker exec`
+# don't use it derectly
 ---
 - hosts: front_container
   gather_facts: no
   roles:
   - front
+  - containers

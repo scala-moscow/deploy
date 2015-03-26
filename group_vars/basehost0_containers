@@ -1,5 +1,3 @@
 ###
 # common options for docker containers running in basehost0
 ###
-
-nginx_worker_processes: 2

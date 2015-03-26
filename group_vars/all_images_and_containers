@@ -1,0 +1,7 @@
+###
+# those options are available on images & container provisioning
+###
+
+nginx_configs_dir: /etc/nginx
+nginx_configs_owner: root
+nginx_configs_group: root

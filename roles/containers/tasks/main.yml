@@ -1,0 +1,1 @@
+- include: ../../../tasks/image_cleanup.yml

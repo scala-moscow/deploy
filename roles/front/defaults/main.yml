@@ -1,0 +1,6 @@
+nginx_configs_dir: /etc/nginx
+nginx_configs_owner: root
+nginx_configs_group: root
+
+nginx_user: www-data
+nginx_http_port: 80

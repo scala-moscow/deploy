@@ -7,12 +7,3 @@ docker_group: docker
 docker_images_ansible_version: 0.9.16
 docker_py_version: 1.0.0
 docker_images_ansible_version: "==1.8.4"
-
-# docker specific
-docker_container_ns: scalamoscow
-
-# our versions
-docker_base_image_version: 0.1
-docker_nginx_image_version: 0.1
-front_container_version_prefix: 0.1
-scala_moscow_version: 0.1

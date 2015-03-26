@@ -1,0 +1,5 @@
+###
+# common options for docker containers & images running in basehost0
+###
+
+nginx_worker_processes: 2
