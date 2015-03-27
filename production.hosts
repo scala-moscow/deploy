@@ -1,5 +1,5 @@
-[basehost]
-sm
+[basehost0]
+sm_root
 
 [basehosts:children]
-basehost
+basehost0
