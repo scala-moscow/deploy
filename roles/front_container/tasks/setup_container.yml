@@ -43,3 +43,4 @@
 
 - include: provision_{{ container.name }}_container.yml
   when: container_id == ''
+  tags: container_provisioning

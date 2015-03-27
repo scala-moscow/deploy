@@ -12,10 +12,24 @@
     msg: "image_id = {{ image_id|default('[not exists]') }}"
   changed_when: no
 
+- set_fact:
+    docker_build_dir: "{{ files_dir }}/dockerfiles/{{ image.name }}"
+    image_inventory_name: build_{{ image.name }}_{{ image.version }}
+    pre_image_name: "{{ docker_container_ns }}/{{ image.name }}_pre"
+    build_container_name: build_{{ image.name }}_{{ image.version }}
+  when: image_id == ''
+
+- set_fact:
+    docker_file: "{{ docker_build_dir }}/Dockerfile"
+    image_inventory_file: provisioning/{{ image_inventory_name }}.hosts
+    pre_image_fqn: "{{ pre_image_name }}:{{ image.version }}"
+  when: image_id == ''
+
+
 - name: "{{ image.name }} image docker build dir"
   file:
     state: directory
-    path: "{{ files_dir }}/dockerfiles/{{ image.name }}"
+    path: "{{ docker_build_dir }}"
     mode: 0775
     owner: "{{ setup_user }}"
     group: "{{ docker_group }}"
@@ -23,7 +37,7 @@
 
 - name: "{{ image.name }} image dockerfile"
   template:
-    dest: "{{ files_dir }}/dockerfiles/{{ image.name }}/Dockerfile"
+    dest: "{{ docker_file }}"
     owner: "{{ setup_user }}"
     group: "{{ docker_group }}"
     src: dockerfiles/{{ image.name }}.j2
@@ -34,83 +48,69 @@
 
 - name: generate inventory file
   template:
-    dest: "{{ files_dir }}/provisioning/build_{{ image.name }}_{{ image.version }}.hosts"
+    dest: "{{ files_dir }}/{{ image_inventory_file }}"
     src: image_inventory.j2
     owner: "{{ setup_user }}"
   when: image_id == ''
 
 - name: build {{ image.name }} pre provisioning image (may take few minutes)
   docker_image:
-    name: "{{ docker_container_ns }}/{{ image.name }}_pre"
+    name: "{{ pre_image_name }}"
     tag: "{{ image.version }}"
-    path: "{{ files_dir }}/dockerfiles/{{ image.name }}"
+    path: "{{ docker_build_dir }}"
   when: image_id == ''
 
 - name: delete {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_{{ image.version }}
+    name: "{{ build_container_name }}"
     state: absent
-    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+    image: "{{ pre_image_fqn }}"
   when: image_id == ''
 
 - name: start temp {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_{{ image.version }}
+    name: "{{ build_container_name }}"
     state: running
-    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+    image: "{{ pre_image_fqn }}"
     volumes: "{{ files_dir }}/provisioning:/provisioning:ro"
 
   when: image_id == ''
 
-- name: provisioning command
-  debug:
-    msg: >
-      docker exec -ti build_{{ image.name }}_{{ image.version }}
-      ansible-playbook -i /provisioning/build_{{ image.name }}_{{ image.version }}.hosts
-      /provisioning/setup_{{ image.name }}.yml -e 'domain_postfix={{ domain_postfix }}'
-  when: image_id == ''
-
 - include: ../../../tasks/run_playbook_in_container.yml
   vars:
-    container_name: build_{{ image.name }}_{{ image.version }}
-    inventory: build_{{ image.name }}_{{ image.version }}
+    container_name: "{{ build_container_name }}"
+    inventory: "{{ image_inventory_name }}"
     playbook: setup_{{ image.name }}
   when: image_id == ''
   tags:
-    - temp
     - image_provisioning
 
-- name: stop temp {{ image.name }} build container
+- name: stop {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_{{ image.version }}
+    name: "{{ build_container_name }}"
     state: stopped
-    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+    image: "{{ pre_image_fqn }}"
   when: image_id == ''
   tags:
-    - temp
+    - image_provisioning
 
 - name: commit {{ image.name }} image
   command: >
-    docker commit build_{{ image.name }}_{{ image.version }}
-    {{ docker_container_ns }}/{{ image.name }}:{{ image.version }}
+    docker commit '{{ build_container_name }}'
+    '{{ docker_container_ns }}/{{ image.name }}:{{ image.version }}'
   when: image_id == ''
   tags:
-    - temp
     - image_provisioning
 
 - name: delete {{ image.name }} build container
   docker:
-    name: build_{{ image.name }}_{{ image.version }}
+    name: "{{ build_container_name }}"
     state: absent
-    image: "{{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}"
+    image: "{{ pre_image_fqn }}"
   when: image_id == ''
-  tags:
-    - temp
   ignore_errors: yes
 
 - name: delete temp {{ image.name }} image
-  command: docker rmi -f {{ docker_container_ns }}/{{ image.name }}_pre:{{ image.version }}
+  command: docker rmi '{{ pre_image_fqn }}'
   when: image_id == ''
-  tags:
-    - temp
   ignore_errors: yes

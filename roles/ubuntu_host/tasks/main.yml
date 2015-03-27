@@ -7,8 +7,6 @@
   with_items:
     - landscape-common
     - landscape-client
-  tags: checked
 
 - name: russian locale
   locale_gen: name=ru_RU.UTF-8 state=present
-  tags: checked

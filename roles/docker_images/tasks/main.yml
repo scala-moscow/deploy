@@ -2,12 +2,11 @@
 - name: python-pip deb pkg
   apt:
     name: python-pip
-  tags: checked
+
 - name: docker.py package
   pip:
     name: docker-py
     version: "{{ docker_py_version }}"
-  tags: checked
 
 - name: docker files dir
   file:

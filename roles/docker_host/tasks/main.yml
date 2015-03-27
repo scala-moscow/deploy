@@ -3,35 +3,36 @@
   apt_key: 
     keyserver: keyserver.ubuntu.com
     id: 36A1D7869245C8950F966E92D8576A8BA88D21E9
-  tags: checked
 
 - name: docker repository
   apt_repository:
     repo: 'deb https://get.docker.com/ubuntu docker main'
     update_cache: yes
-  tags: checked
 
 - name: docker package
   apt: 
     install_recommends: yes
     name: lxc-docker={{ docker_version }}
-  tags: checked
 
 - name: docker related utils
   apt:
     name: arping
-  tags: checked
 
 - name: pipework script
   get_url: 
     url: https://github.com/jpetazzo/pipework/raw/{{ pipework_version }}/pipework
     dest: /usr/local/bin/pipework
     force: true
-  tags: checked
+
 - name: pipework script file mode
   file:
     mode: 0775
     state: file
     path: /usr/local/bin/pipework
     group: docker
-  tags: checked
+
+- name: add setup user to docker group
+  user:
+    name: "{{ setup_user }}"
+    groups: "{{ docker_group }}"
+    append: yes
