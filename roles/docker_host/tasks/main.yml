@@ -1,6 +1,6 @@
 ---
 - name: docker apt key
-  apt_key: 
+  apt_key:
     keyserver: keyserver.ubuntu.com
     id: 36A1D7869245C8950F966E92D8576A8BA88D21E9
 
@@ -10,16 +10,16 @@
     update_cache: yes
 
 - name: docker package
-  apt: 
+  apt:
     install_recommends: yes
-    name: lxc-docker={{ docker_version }}
+    name: lxc-docker-{{ docker_version }}={{ docker_version }}
 
 - name: docker related utils
   apt:
     name: arping
 
 - name: pipework script
-  get_url: 
+  get_url:
     url: https://github.com/jpetazzo/pipework/raw/{{ pipework_version }}/pipework
     dest: /usr/local/bin/pipework
     force: true

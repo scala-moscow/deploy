@@ -1,5 +1,5 @@
 
-nginx_version: "-core=1.4.6-1ubuntu3.2" # appends to "nginx",
+nginx_version: "-core=1.4.6-1ubuntu3.3" # appends to "nginx",
                                         # diff of nginx pkgs - http://askubuntu.com/a/556382
 nginx_configs_dir: /etc/nginx
 nginx_configs_owner: root

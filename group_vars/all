@@ -12,9 +12,9 @@ docker_container_ns: scalamoscow
 
 # our versions
 docker_base_image_version: 0.1
-docker_nginx_image_version: 0.1
-front_container_version_prefix: 0.1
-scala_moscow_version: 0.1
+docker_nginx_image_version: 0.1.1
+front_container_version_prefix: 0.1.1
+scala_moscow_version: 0.1.1
 
 
 sync_files:
